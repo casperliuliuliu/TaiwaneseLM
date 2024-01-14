@@ -12,7 +12,7 @@ while True:
     messages = [
         {
             "role": "system",
-            "content": "You are a friendly chatbot who always responds in the style of a pirate",
+            "content": "You are a friendly chatbot",
         },
 
         # {
