@@ -115,8 +115,8 @@ if __name__ == "__main__":
 
     # test_with_google()
     # Example usage
-    results = google_search("Python programming")
-    print(results)
-    for result in results:
-        print(result['title'], result['link'])
-    print("finished")
+    # results = google_search("Python programming")
+    # print(results)
+    # for result in results:
+    #     print(result['title'], result['link'])
+    # print("finished")
