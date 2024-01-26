@@ -93,6 +93,7 @@ def google_search(query):
 
     # Extracting search results
     search_results = []
+    print(soup)
     for g in soup.find_all('div', class_='tF2Cxc'):
         title = g.find('h3').text
         link = g.find('a')['href']
@@ -115,5 +116,7 @@ if __name__ == "__main__":
     # test_with_google()
     # Example usage
     results = google_search("Python programming")
+    print(results)
     for result in results:
         print(result['title'], result['link'])
+    print("finished")
