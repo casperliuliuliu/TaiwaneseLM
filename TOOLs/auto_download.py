@@ -1,4 +1,5 @@
 import requests
+import time
 from selenium import webdriver
 
 def send_url(target_url, payload_url):
@@ -68,13 +69,21 @@ def fill_input_field(url, input_name, value_to_fill):
         # Close the browser window
         driver.quit()
 
+def test_with_google():
+    driver = webdriver.Chrome()
+    url ='https://www.google.com.tw'
+    driver.get(url)
+    time.sleep(2)
+    driver.close()
 
 
+if __name__ == "__main__":
+    target_url = "https://www.bigconv.com/v215"
+    payload_url = "https://www.youtube.com/watch?v=iAYXm1V3FB4&list=RDajJanul_K4k&index=5"
 
-target_url = "https://www.bigconv.com/v215"
-payload_url = "https://www.youtube.com/watch?v=iAYXm1V3FB4&list=RDajJanul_K4k&index=5"
+    # response = send_url(target_url, payload_url)
+    # response = get_page_content(target_url)
+    # print(response)
+    # fill_input_field(target_url, "Search MP3 Here ...", "hehe")
 
-# response = send_url(target_url, payload_url)
-# response = get_page_content(target_url)
-# print(response)
-fill_input_field(target_url, "Search MP3 Here ...", "hehe")
+    test_with_google()
