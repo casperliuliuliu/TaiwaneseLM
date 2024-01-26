@@ -1,6 +1,6 @@
 import time
 import requests
-from bs4 import BeautifulSoup
+# from bs4 import BeautifulSoup
 from selenium import webdriver
 
 def send_url(target_url, payload_url):
@@ -113,7 +113,7 @@ if __name__ == "__main__":
     # print(response)
     # fill_input_field(target_url, "Search MP3 Here ...", "hehe")
 
-    # test_with_google()
+    test_with_google()
     # Example usage
     # results = google_search("Python programming")
     # print(results)
