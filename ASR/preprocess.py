@@ -68,7 +68,7 @@ import matplotlib.pyplot as plt
 
 def preprocess_audio(filename):
     audio, sample_rate = librosa.load(filename, sr=None)
-    print(audio.mean())
+    print(f"min: {audio.min()}\nmax: {audio.max()}\nmean: {audio.mean()}")
     print(sample_rate)
     mfccs = librosa.feature.mfcc(y=audio, sr=sample_rate, n_mfcc=128)
     return mfccs
