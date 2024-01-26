@@ -1,5 +1,6 @@
-import requests
 import time
+import requests
+from bs4 import BeautifulSoup
 from selenium import webdriver
 
 def send_url(target_url, payload_url):
@@ -76,6 +77,31 @@ def test_with_google():
     time.sleep(2)
     driver.close()
 
+def google_search(query):
+    # URL encoding the query
+    query = query.replace(' ', '+')
+    
+    # Google Search URL
+    URL = f"https://google.com/search?q={query}"
+    
+    # Performing the GET request
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'}
+    response = requests.get(URL, headers=headers)
+
+    # Parsing the HTML content
+    soup = BeautifulSoup(response.text, 'html.parser')
+
+    # Extracting search results
+    search_results = []
+    for g in soup.find_all('div', class_='tF2Cxc'):
+        title = g.find('h3').text
+        link = g.find('a')['href']
+        item = {'title': title, 'link': link}
+        search_results.append(item)
+    
+    return search_results
+
+
 
 if __name__ == "__main__":
     target_url = "https://www.bigconv.com/v215"
@@ -86,4 +112,8 @@ if __name__ == "__main__":
     # print(response)
     # fill_input_field(target_url, "Search MP3 Here ...", "hehe")
 
-    test_with_google()
+    # test_with_google()
+    # Example usage
+    results = google_search("Python programming")
+    for result in results:
+        print(result['title'], result['link'])
