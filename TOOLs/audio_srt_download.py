@@ -2,8 +2,6 @@ from __future__ import unicode_literals
 import yt_dlp
 import os
 
-
-
 def download_video_srt(url, path, ffmpeg_path):
     ydl_opts = {
     'format': 'bestaudio/best',
