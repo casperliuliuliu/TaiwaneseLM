@@ -37,5 +37,5 @@ def srt_to_audio_clips(audio_file_path, srt_file_path, output_folder):
     return clips_to_subtitles
 
 if __name__ == "__main__":
-    clips_transcriptions = srt_to_audio_clips("D:/CASPER/output1.wav", "D:/CASPER/output_test.srt", "D:/CASPER/Weight")
+    clips_transcriptions = srt_to_audio_clips("D:/CASPER/output1.wav", "D:/CASPER/output1.en.srt", "D:/Casper/Weight/test")
     print(json.dumps(clips_transcriptions, indent=4))
