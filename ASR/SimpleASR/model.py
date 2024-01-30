@@ -11,16 +11,11 @@ class SimpleASRModel(nn.Module):
 
     def forward(self, x):
         x = self.conv1(x)
+        x = x.permute(2, 1, 0)  # Reshaping for RNN; new shape: (batch_size, time_steps, 32, features_after_conv)
+        x = x.reshape(x.size(0), x.size(1), -1)  # Flatten the last two dimensions for RNN; new shape: (batch_size, time_steps, flattened_features)
         x, _ = self.rnn(x)
         x = self.fc(x)
         return x
-    
-def preprocess_audio(audio_path):
-    waveform, sample_rate = torchaudio.load(audio_path)
-    # Convert to spectrogram
-    spectrogram = torchaudio.transforms.Spectrogram()(waveform)
-    return spectrogram
-
 
 import string
 
@@ -36,47 +31,96 @@ num_classes = len(basic_chars) + len(extra_chars) + 1  # +1 for end-of-sentence 
 print("Number of classes:", num_classes)
 
 
-from torchaudio.datasets import LIBRISPEECH
-from torch.utils.data import DataLoader
-from torchvision import datasets, transforms
+# from torchaudio.datasets import LIBRISPEECH
+# from torch.utils.data import DataLoader
+# from torchvision import datasets, transforms
 
-librispeech_dataset = LIBRISPEECH("./data", url="train-clean-100", download=True)
-import torchaudio
-from torchaudio.transforms import MelSpectrogram, Resample
+# librispeech_dataset = LIBRISPEECH("./data", url="train-clean-100", download=True)
+# import torchaudio
+# from torchaudio.transforms import MelSpectrogram, Resample
 
-# Define transformations
-transform = torchaudio.transforms.Compose([
-    Resample(orig_freq=16000, new_freq=8000),  # Resample from 16kHz to 8kHz
-    MelSpectrogram(),  # Convert to Mel-Spectrogram
-])
+# resampler = Resample(orig_freq=16000, new_freq=8000)  # Resample from 16kHz to 8kHz
+# melspectrogramer =  MelSpectrogram()  # Convert to Mel-Spectrogram
 
-# Applying transformations to the dataset
-transformed_dataset = [(transform(waveform), label) for waveform, _, _, label, _, _ in librispeech_dataset]
+# train_loader = DataLoader(dataset=librispeech_dataset, batch_size=1, shuffle=True)
 
-# transform = transforms.Compose([
-#     transforms.ToTensor(),
-#     transforms.Normalize((0.5,), (0.5,))
-# ])
+# for audio, labels, input_lengths, label_length, ii, jj in train_loader:
+#     print(audio.shape)
+#     data = resampler(audio)
+#     data = melspectrogramer(data)
+#     print(data.shape)
 
-
-# # Create the DataLoader for our training set
-train_loader = DataLoader(dataset=train_dataset, batch_size=64, shuffle=True)
-for epoch in range(num_epochs):
-    for data in train_loader:
-        waveform, sample_rate, utterance, speaker_id, chapter_id, utterance_id = data
-        # Your training code here
-
+#     break
 # model = SimpleASRModel()
 # criterion = nn.CTCLoss()
 # optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
+# print(model)
+# num_epochs = 5
 # for epoch in range(num_epochs):
-#     for i, (audio, labels, input_lengths, label_lengths) in enumerate(train_loader):
+#     for i, (audio, labels, input_lengths, label_lengths, ii, jj) in enumerate(train_loader):
 #         optimizer.zero_grad()
-#         output = model(audio)
+
+#         data = resampler(audio)
+#         data = melspectrogramer(data)
+#         output = model(data)
+
 #         loss = criterion(output, labels, input_lengths, label_lengths)
 #         loss.backward()
 #         optimizer.step()
 
 
 
+import torch
+import torchaudio
+from torchaudio.datasets import LIBRISPEECH
+from torchaudio.transforms import MelSpectrogram, Resample
+from torch.utils.data import DataLoader
+from torch.nn import CTCLoss
+from torch.optim import Adam
+import torch.nn as nn
+
+
+# Load the dataset
+librispeech_dataset = LIBRISPEECH("./data", url="train-clean-100", download=True)
+
+# Transforms
+resampler = Resample(orig_freq=16000, new_freq=8000)  # Resample from 16kHz to 8kHz
+melspectrogramer = MelSpectrogram(n_mels=32)  # Convert to Mel-Spectrogram
+
+# Data Loader
+train_loader = DataLoader(dataset=librispeech_dataset, batch_size=1, shuffle=True)
+
+# Instantiate model, loss function, and optimizer
+model = SimpleASRModel()
+criterion = CTCLoss()
+optimizer = Adam(model.parameters(), lr=0.001)
+
+# Training loop
+num_epochs = 5
+for epoch in range(num_epochs):
+    for i, (audio, labels, input_lengths, label_lengths, i, j) in enumerate(train_loader):
+        print(i)
+        print(j)
+        print(label_lengths)
+        optimizer.zero_grad()
+
+        # Preprocessing
+        audio = audio.squeeze(1)  # Remove channel dimension
+        data = resampler(audio)
+        data = melspectrogramer(data)
+        # Forward pass
+        output = model(data)
+        print(output.shape)
+#         # Adjusting shapes for CTCLoss; output shape -> (T, N, C)
+        output = output.permute(2, 0, 1)  # Assuming model's output is (N, C, T)
+
+#         # Loss and backpropagation
+        ## Loss function STILL got problems.
+        loss = criterion(output, labels, torch.tensor(label_lengths), label_lengths)
+        # loss.backward()
+#         optimizer.step()
+
+#     print(f"Epoch {epoch+1}/{num_epochs}, Loss: {loss.item()}")
+
+# print("Training completed")
