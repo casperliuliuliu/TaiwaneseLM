@@ -111,13 +111,13 @@ for epoch in range(num_epochs):
         data = melspectrogramer(data)
         # Forward pass
         output = model(data)
-        print(output.shape)
 #         # Adjusting shapes for CTCLoss; output shape -> (T, N, C)
         output = output.permute(2, 0, 1)  # Assuming model's output is (N, C, T)
-
+        print(len(output.shape))
+        
 #         # Loss and backpropagation
         ## Loss function STILL got problems.
-        loss = criterion(output, labels, torch.tensor(label_lengths), label_lengths)
+        loss = criterion(output, labels, torch.tensor(output.shape[0], dtype=torch.int8), label_lengths)
         # loss.backward()
 #         optimizer.step()
 
