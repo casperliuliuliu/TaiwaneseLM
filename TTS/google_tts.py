@@ -43,6 +43,7 @@ def speak_vocabulary_fast(words, speed=1.5):  # speed > 1.0 to speed up, < 1.0 t
 
 # Example usage
 words = ["apple", "banana", "cherry"]
+words = ["你好"]
 speak_vocabulary_fast(words, speed=10)  # Increase the speed to 1.5 times the normal speed
 # # Example usage
 # words = ["測試", "casper", "nostalgia","卡布奇諾"]
