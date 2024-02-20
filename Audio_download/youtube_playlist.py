@@ -11,8 +11,9 @@ def get_playlist_urls(playlist_url):
         print(f"An error occurred: {e}")
         return []
 
-# Example usage
-playlist_url = 'https://www.youtube.com/playlist?list=PLoROMvodv4rNiJRchCzutFw5ItR_Z27CM'
-video_urls = get_playlist_urls(playlist_url)
-for url in video_urls:
-    print(url)
+if __name__ == "__main__":
+    
+    playlist_url = 'https://www.youtube.com/playlist?list=PLoROMvodv4rNiJRchCzutFw5ItR_Z27CM'
+    video_urls = get_playlist_urls(playlist_url)
+    for url in video_urls:
+        print(url)

@@ -4,7 +4,7 @@ import contextlib
 import os
 import json
 
-def srt_to_audio_clips(audio_file_path, srt_file_path, output_folder):
+def srt_to_audio_clips(audio_file_path, srt_file_path, output_folder, output_prefix):
     subs = pysrt.open(srt_file_path)
 
     if not os.path.exists(output_folder):
@@ -20,8 +20,8 @@ def srt_to_audio_clips(audio_file_path, srt_file_path, output_folder):
             audio.setpos(int(start * framerate))
             frame_count = int((end - start) * framerate)
             audio_clip = audio.readframes(frame_count)
-
-            output_file_path = os.path.join(output_folder, f"clip_{idx+1}.wav")
+            output_filename = f"{output_prefix}_{idx+1}.wav"
+            output_file_path = os.path.join(output_folder, output_filename)
             
             with wave.open(output_file_path, 'wb') as output_audio:
                 output_audio.setnchannels(audio.getnchannels())
@@ -29,7 +29,7 @@ def srt_to_audio_clips(audio_file_path, srt_file_path, output_folder):
                 output_audio.setframerate(framerate)
                 output_audio.writeframes(audio_clip)
 
-            clips_to_subtitles[output_file_path] = [sub.text.replace('\n', ' ')]
+            clips_to_subtitles[output_filename] = [sub.text.replace('\n', ' ')]
 
     with open(os.path.join(output_folder, 'transcriptions.json'), 'w') as json_file:
         json.dump(clips_to_subtitles, json_file, indent=4)
@@ -37,5 +37,5 @@ def srt_to_audio_clips(audio_file_path, srt_file_path, output_folder):
     return clips_to_subtitles
 
 if __name__ == "__main__":
-    clips_transcriptions = srt_to_audio_clips("D:/CASPER/output1.wav", "D:/CASPER/output1.en.srt", "D:/Casper/Weight/test")
+    clips_transcriptions = srt_to_audio_clips("D:/CASPER/output1.wav", "D:/CASPER/output1.en.srt", "D:/Casper/Weight/test", "hello")
     print(json.dumps(clips_transcriptions, indent=4))
