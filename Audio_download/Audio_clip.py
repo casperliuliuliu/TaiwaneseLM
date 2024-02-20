@@ -31,11 +31,14 @@ def srt_to_audio_clips(audio_file_path, srt_file_path, output_folder, output_pre
 
             clips_to_subtitles[output_filename] = [sub.text.replace('\n', ' ')]
 
-    with open(os.path.join(output_folder, 'transcriptions.json'), 'w') as json_file:
-        json.dump(clips_to_subtitles, json_file, indent=4)
+    with open(os.path.join(output_folder, 'transcriptions.json'), 'w', encoding='utf-8') as json_file:
+        json.dump(clips_to_subtitles, json_file, indent=4, ensure_ascii=False)
+
+    os.remove(audio_file_path)
+    os.remove(srt_file_path)
 
     return clips_to_subtitles
 
 if __name__ == "__main__":
-    clips_transcriptions = srt_to_audio_clips("D:/CASPER/output1.wav", "D:/CASPER/output1.en.srt", "D:/Casper/Weight/test", "hello")
+    clips_transcriptions = srt_to_audio_clips("D:/CASPER/output1.wav", "D:/CASPER/output1.en.srt", "D:/Casper/Weight/test2", "hello")
     print(json.dumps(clips_transcriptions, indent=4))
