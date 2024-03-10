@@ -23,8 +23,8 @@ def download_video_srt(url, path, ffmpeg_path):
 
 if __name__ == "__main__":
     url = "https://www.youtube.com/watch?v=FPYl7nIKRbA"
-    # path = '/Users/liushiwen/Desktop/WINTERVACATION/output1.%(ext)s'
-    path = 'D:/CASPER/output1%(title)s.%(ext)s'
-    # ffmpeg_path = '/Users/liushiwen/Desktop/WINTERVACATION/ffmpeg'
-    ffmpeg_path = 'C:/ffmpeg/bin/ffmpeg.exe'
+    path = '/Users/liushiwen/Desktop/大四下/output1.%(ext)s'
+    # path = 'D:/CASPER/output1%(title)s.%(ext)s'
+    ffmpeg_path = '/Users/liushiwen/Downloads/ffmpeg'
+    # ffmpeg_path = 'C:/ffmpeg/bin/ffmpeg.exe'
     download_video_srt(url, path, ffmpeg_path)

@@ -2,6 +2,16 @@ import requests
 import sounddevice as sd
 from scipy.io.wavfile import write
 import numpy as np
+import vlc
+import time
+
+def play_stream(base_url):
+    url = base_url + "/stream_audio"
+    player = vlc.MediaPlayer(url)
+    player.play()
+    # Keep the script running while audio is playing
+    while player.get_state() != vlc.State.Ended:
+        time.sleep(1)
 
 def download_audio_from_server(base_url):
     url = base_url + "/download_audio"
@@ -66,4 +76,4 @@ if __name__ == "__main__":
     # record_audio(duration=3, fs=44100, filename='output.mp3')
     audio_file_path = "/Users/liushiwen/Desktop/大四下/NSC/server/output.mp3"  # Update this path to your audio file
     # send_message_and_audio(base_url, audio_file_path)
-    download_audio_from_server(base_url)
+    play_stream(base_url)
