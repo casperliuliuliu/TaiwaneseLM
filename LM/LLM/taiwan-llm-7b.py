@@ -4,15 +4,16 @@
 import torch
 from transformers import pipeline
 import sys
-desired_path = "D:/Casper/"
+desired_path = "D:/Casper/Other"
 sys.path.append(desired_path)
 from my_config import get_config
 
 config = get_config()
 hf_token = config['Hugging_Face_Token']
 
+path = "D:\Casper\OTHER\Weight\huggingface\hub\models--yentinglin--Taiwan-LLM-7B-v2.1-chat\snapshots\\be7d3a45160727c67088fda933c1413fa97138a2"
 
-pipe = pipeline("text-generation", model="yentinglin/Taiwan-LLM-7B-v2.1-chat", torch_dtype=torch.bfloat16, device_map="auto", token=hf_token)
+pipe = pipeline("text-generation", model=path, torch_dtype=torch.bfloat16, device_map="auto", token=hf_token)
 
 while True:
     content = input("Enter:")

@@ -8,7 +8,7 @@ path = "D:\Casper\OTHER\Weight\huggingface\hub\models--HuggingFaceH4--zephyr-7b-
 path = "D:\Casper\OTHER\Weight\huggingface\hub\models--HuggingFaceH4--zephyr-7b-beta\snapshots\dc24cabd13eacd3ae3a5fe574bd645483a335a4a"
 pipe = pipeline("text-generation", model=path, torch_dtype=torch.bfloat16, device_map="auto")
 conversation_history = []
-
+# %%
 # while True:
 content = input("Enter:")
 # We use the tokenizer's chat template to format each message - see https://huggingface.co/docs/transformers/main/en/chat_templating
@@ -16,6 +16,14 @@ messages = [
     {
         "role": "system",
         "content": "You are a friendly chatbot",
+    },
+    {
+        "role": "user", 
+        "content": "what is alcohol"
+    },
+    {
+        "role": "assistant", 
+        "content": "When we talk about alcohol, we usually mean the alcohol found in beer, wine and spirits. Alcohol is the ingredient in these drinks that makes you drunk.The alcohol in drinks is called ethanol (ethyl alcohol). It is made when yeast ferments the sugars in grains, fruits and vegetables. For example, wine is made from the sugar in grapes and vodka is made from the sugar in potatoes."
     },
     {
         "role": "user", 
@@ -35,5 +43,5 @@ print(outputs[0]["generated_text"])
 # Ah, me hearty matey! But yer question be a puzzler! A human cannot eat a helicopter in one sitting, as helicopters are not edible. They be made of metal, plastic, and other materials, not food!
 
 # %%
-print(output[0]["generated_text"][0])
+print(outputs[0].keys())
 # %%
