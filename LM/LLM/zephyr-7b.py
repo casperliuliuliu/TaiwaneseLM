@@ -4,8 +4,9 @@
 
 import torch
 from transformers import pipeline
-
-pipe = pipeline("text-generation", model="HuggingFaceH4/zephyr-7b-beta", torch_dtype=torch.bfloat16, device_map="auto")
+path = "D:\Casper\OTHER\Weight\huggingface\hub\models--HuggingFaceH4--zephyr-7b-beta"
+path = "D:\Casper\OTHER\Weight\huggingface\hub\models--HuggingFaceH4--zephyr-7b-beta\snapshots\dc24cabd13eacd3ae3a5fe574bd645483a335a4a"
+pipe = pipeline("text-generation", model=path, torch_dtype=torch.bfloat16, device_map="auto")
 while True:
     content = input("Enter:")
     # We use the tokenizer's chat template to format each message - see https://huggingface.co/docs/transformers/main/en/chat_templating
