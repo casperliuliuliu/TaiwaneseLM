@@ -38,6 +38,6 @@ def convert_seconds(total_seconds):
 
 
 if __name__ == "__main__":
-    folder_path = 'D:/Casper/Weight/test'
+    folder_path = 'D:/Casper/Taiwanese_youtube/billionaire_story_EP281'
     total_duration_seconds = sum_audio_durations(folder_path)
     convert_seconds(total_duration_seconds)
