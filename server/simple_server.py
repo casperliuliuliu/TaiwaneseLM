@@ -10,8 +10,9 @@ def stream_audio(file_path):
 @app.route('/stream_audio')
 def stream_audio_route():
     audio_file_path = '/Users/liushiwen/Desktop/大四下/output1.mp3'
-    audio_file_path = "/Users/liushiwen/Desktop/大四下/NSC/TaiwaneseLM/server/server_audio/output.mp3"
-    return Response(stream_with_context(stream_audio(audio_file_path)), content_type="audio/mp3")
+    # audio_file_path = '/Users/liushiwen/Desktop/大四下/output1.wav'
+    # audio_file_path = "/Users/liushiwen/Desktop/大四下/NSC/TaiwaneseLM/server/server_audio/output.mp3"
+    return Response(stream_with_context(stream_audio(audio_file_path)), content_type="audio/wav")
 
 @app.route('/download_audio', methods=['GET'])
 def download_audio():
