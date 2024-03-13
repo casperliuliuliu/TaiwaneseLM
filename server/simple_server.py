@@ -17,7 +17,7 @@ def stream_audio_route():
 @app.route('/download_audio', methods=['GET'])
 def download_audio():
     # Specify the path to your audio file
-    audio_file_path = '/Users/liushiwen/Desktop/大四下/NSC/server/output.mp3'
+    audio_file_path = '/Users/liushiwen/Desktop/大四下/NSC/TaiwaneseLM/server/server_audio/output.mp3'
     return send_file(audio_file_path, as_attachment=True)
 
 @app.route('/upload_audio', methods=['POST']) # This function could be streaming

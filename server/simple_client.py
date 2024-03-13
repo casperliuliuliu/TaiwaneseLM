@@ -71,7 +71,7 @@ def record_audio(duration, fs, filename):
     print(f"Recording saved to {filename}")
 
 if __name__ == "__main__":
-    base_url = "https://511a-140-117-193-176.ngrok-free.app"
+    base_url = "http://127.0.0.1:645"
     # send_message(base_url)
     # record_audio(duration=3, fs=44100, filename='output.mp3')
     audio_file_path = "/Users/liushiwen/Desktop/大四下/NSC/server/output.mp3"  # Update this path to your audio file
