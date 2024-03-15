@@ -1,6 +1,21 @@
 from flask import Flask, request, jsonify, send_file, Response, stream_with_context
 import os
+from yating.yating_tts import speak_word_with_yating
 app = Flask(__name__)
+
+@app.route('/speak_word')
+def speak_word():
+    # Get the word from query parameters, e.g., /speak_word?word=hello
+    word = request.args.get('word', '')
+    if not word:
+        return "No word provided", 400
+    store_path = "/Users/liushiwen/Desktop/大四下/NSC/TaiwaneseLM/server/server_audio"
+    filename = speak_word_with_yating(word, store_path)
+    path_to_file = os.path.join('audio_files', f"{filename}.mp3")
+    if not os.path.exists(path_to_file):
+        return "Failed to generate audio", 500
+    
+    return send_file(path_to_file, as_attachment=True)
 
 def stream_audio(file_path):
     with open(file_path, "rb") as audio_file:

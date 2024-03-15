@@ -5,6 +5,19 @@ import numpy as np
 import vlc
 import time
 
+def get_and_save_word_audio(base_url, word):
+    url = base_url + "/speak_word"
+    # Add the word as a query parameter
+    params = {'word': word}
+    response = requests.get(url, params=params)
+    if response.status_code == 200:
+        filename = f"{word}.mp3"
+        with open(filename, 'wb') as audio_file:
+            audio_file.write(response.content)
+        print(f"Audio file for '{word}' saved as {filename}")
+    else:
+        print(f"Failed to get audio for '{word}'. Server responded with status code {response.status_code}")
+
 def play_stream(base_url):
     url = base_url + "/stream_audio"
     player = vlc.MediaPlayer(url)
@@ -74,6 +87,9 @@ if __name__ == "__main__":
     base_url = "http://127.0.0.1:645"
     # send_message(base_url)
     # record_audio(duration=3, fs=44100, filename='output.mp3')
-    audio_file_path = "/Users/liushiwen/Desktop/大四下/NSC/server/output.mp3"  # Update this path to your audio file
-    # send_message_and_audio(base_url, audio_file_path)
-    play_stream(base_url)
+
+    # audio_file_path = "/Users/liushiwen/Desktop/大四下/NSC/server/output.mp3"  # Update this path to your audio file
+    # # send_message_and_audio(base_url, audio_file_path)
+    # play_stream(base_url)
+
+    get_and_save_word_audio(base_url, '眼藥水')
