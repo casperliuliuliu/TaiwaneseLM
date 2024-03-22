@@ -19,7 +19,7 @@ def speak_word_with_yating(word, store_path = ''):
 
     TEXT = word
     TEXT_TYPE = ttsClient.TYPE_TEXT
-    MODEL = ttsClient.MODEL_TAI_FEMALE_1
+    MODEL = ttsClient.MODEL_TAI_FEMALE_2
     SPEED = 1.0
     PITCH = 1.0
     ENERGY = 1.5
@@ -34,6 +34,5 @@ def speak_word_with_yating(word, store_path = ''):
     return FILE_NAME
 
 if __name__ == "__main__":
-    store_path = "/Users/liushiwen/Desktop/大四下/NSC/TaiwaneseLM/server/yating/example"
+    store_path = "/Users/liushiwen/Desktop/大四下/NSC/TaiwaneseLM/server/yating/"
     speak_word_with_yating("酷大便", store_path)
-    
