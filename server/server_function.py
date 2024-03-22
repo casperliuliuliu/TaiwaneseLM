@@ -9,7 +9,7 @@ config = get_config()
 my_api_key = config["OPENAI_API_KEY"]
 client = OpenAI(api_key=my_api_key)
 
-# Function to encode the image
+
 def encode_image(image_path):
   with open(image_path, "rb") as image_file:
     return base64.b64encode(image_file.read()).decode('utf-8')
@@ -34,7 +34,6 @@ def vision_llm(image_path):
     ],
     max_tokens=300,
     )
-    # print(response.choices[0])
     return response.choices[0]
 
 def prompting(message, task):
@@ -85,7 +84,6 @@ def translating(english_message): # might not use this.
 
 
 def generate_image(gen_img_prompt):
-
     response = client.images.generate(
     model="dall-e-2",
     prompt=gen_img_prompt,
@@ -95,44 +93,43 @@ def generate_image(gen_img_prompt):
     )
     image_url = response.data[0].url
     print(image_url)
-    import requests
 
-def call_gpt4_for_ar_control(prompt):
-    api_url = "https://api.openai.com/v4/completions"
-    headers = {
-        "Authorization": f"Bearer {my_api_key}",
-        "Content-Type": "application/json",
+def evaluation(audio_path):
+
+    score = 100
+    return score
+
+
+def pretend_move(xx, yy, zz):
+    if len(xx) != len(yy):
+        return -1
+    elif len(xx) != len(zz):
+        return -1
+    for ii in range(len(xx)):
+        print(f"x:{xx[ii]}, y:{yy[ii]}, z:{zz[ii]}")
+
+def pretend_spin(xx_angle, yy_angle, zz_angle):
+    if len(xx_angle) != len(yy_angle):
+        return -1
+    elif len(xx_angle) != len(zz_angle):
+        return -1
+    for ii in range(len(xx_angle)):
+        print(f"x:{xx_angle[ii]}, y:{yy_angle[ii]}, z:{zz_angle[ii]}")
+
+def pretend_send_env():
+    env_prompt = {
+        'curr_xx' : 20,
+        'curr_yy' : 0,
+        'curr_zz' : 20,
+        'curr_xx_angle' : 0,
+        'curr_yy_angle' : 0,
+        'curr_zz_angle' : 0,
+
+        'BaWan_xx': 155, # None for no food now
+        'BaWan_yy': 0, 
+        'BaWan_zz': 200, 
     }
-    data = {
-        "model": "gpt-4",
-        "prompt": prompt,
-        "max_tokens": 100,
-        "temperature": 0.5,
-    }
-    
-    response = requests.post(api_url, json=data, headers=headers)
-    result = response.json()
-    
-    # Assuming the GPT-4 response includes coordinates and rotation in a parseable format
-    # Example response: "Move to (1, 2, 3) and rotate to (0.1, 0.2, 0.3)."
-    return result
-    text_response = result['choices'][0]['text'].strip()
-    
-    # Parse the response to extract movement and rotation values
-    # Note: Parsing will depend on the exact format of GPT-4's response.
-    # Here's a simple example assuming the format mentioned above:
-    try:
-        parts = text_response.split(' and rotate to ')
-        position_str = parts[0].split('Move to ')[1]
-        rotation_str = parts[1].strip('.').strip(')').strip('(')
-        
-        position = tuple(map(float, position_str.strip(')').strip('(').split(', ')))
-        rotation = tuple(map(float, rotation_str.split(', ')))
-        print(position, rotation)
-        print(*position, *rotation)
-        # move(*position, *rotation)
-    except Exception as e:
-        print(f"Error parsing GPT-4 response: {e}")
+
 
 if __name__ == "__main__":
     img_path = "/Users/liushiwen/Desktop/大四下/NSC/TaiwaneseLM/server/server_image/img.png"

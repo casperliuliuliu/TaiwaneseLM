@@ -1,12 +1,13 @@
 from ailabs_asr.streaming import StreamingClient
 import sys
 desired_path = "D:/Casper/Other"
+desired_path = "/Users/liushiwen/Desktop/大四下/"
 sys.path.append(desired_path)
 
-from my_config import get_config
+from get_server_config import get_config
 config = get_config()
 yating_key = config['yating_key']
-# import pyaudio
+
 def on_processing_sentence(message):
   print(f'hello: {message["asr_sentence"]}')
 
