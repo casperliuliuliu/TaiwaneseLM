@@ -1,8 +1,31 @@
 from flask import Flask, request, jsonify, send_file, Response, stream_with_context
 import os
 from yating.yating_tts import speak_word_with_yating
+import sys
+desired_path = "/Users/liushiwen/Desktop/大四下/"
+sys.path.append(desired_path)
+
+from get_server_config import get_config
+config = get_config()
 app = Flask(__name__)
 
+# app.config = config
+
+@app.route('/upload_image', methods=['POST'])
+def upload_image():
+    if 'image' not in request.files:
+        return jsonify({'message': 'No image part in the request'}), 400
+    file = request.files['image']
+    if file.filename == '':
+        return jsonify({'message': 'No image selected for uploading'}), 400
+    if file:
+        # Optionally, save the file to your server
+        filepath = os.path.join(config['UPLOAD_FOLDER'], "img.png")
+        # print(file.filename)
+        file.save(filepath)
+        # Respond to the client
+        return jsonify({'message': 'Image successfully received'}), 200
+    
 @app.route('/speak_word')
 def speak_word():
     # Get the word from query parameters, e.g., /speak_word?word=hello

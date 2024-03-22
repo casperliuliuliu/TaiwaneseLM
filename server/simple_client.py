@@ -4,6 +4,20 @@ from scipy.io.wavfile import write
 import numpy as np
 import vlc
 import time
+def upload_image(base_url, image_path):
+    url = base_url + "/upload_image"
+    with open(image_path, 'rb') as image_file:
+        # Define the request payload, including the file in the 'image' part
+        files = {'image': (image_path, image_file)}
+        # Make the POST request
+        response = requests.post(url, files=files)
+        # Check the response
+        if response.status_code == 200:
+            print("Image successfully uploaded.")
+            print(response.json())  # Print the response message from the server
+        else:
+            print("Failed to upload image.")
+            print(response.text)  # Print any error message from the server
 
 def get_and_save_word_audio(base_url, word):
     url = base_url + "/speak_word"
@@ -92,4 +106,5 @@ if __name__ == "__main__":
     # # send_message_and_audio(base_url, audio_file_path)
     # play_stream(base_url)
 
-    get_and_save_word_audio(base_url, '眼藥水')
+    # get_and_save_word_audio(base_url, '眼藥水')
+    upload_image(base_url, "/Users/liushiwen/Desktop/大四下/NSC/TaiwaneseLM/server/client_image/my_bro.png")
