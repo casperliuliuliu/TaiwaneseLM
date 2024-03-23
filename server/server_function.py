@@ -92,7 +92,16 @@ def generate_image(gen_img_prompt):
     n=1,
     )
     image_url = response.data[0].url
-    print(image_url)
+    return image_url
+
+def download_image(image_url, image_name):
+    response = requests.get(image_url)
+    if response.status_code == 200:
+        with open(image_name, 'wb') as file:
+            file.write(response.content)
+        print(f"Image successfully downloaded: {image_name}")
+    else:
+        print(f"Failed to download image. Status code: {response.status_code}")
 
 def evaluation(audio_path):
 
@@ -133,8 +142,9 @@ def pretend_send_env():
 
 if __name__ == "__main__":
     img_path = "/Users/liushiwen/Desktop/大四下/NSC/TaiwaneseLM/server/server_image/img.png"
-    vision_message = vision_llm(img_path)
-    print(vision_message)
+    img_path = "/Users/liushiwen/Desktop/大四下/NSC/TaiwaneseLM/server/server_image/"
+    # vision_message = vision_llm(img_path)
+    # print(vision_message)
 
     # gen_img_prompt = "a cartoon fruit"
     # generate_image(gen_img_prompt)
@@ -144,3 +154,14 @@ if __name__ == "__main__":
     # prompt = "Given the current position is (0, 0, 0) and orientation is (0, 0, 0), where should the AR object move if it wants to approach the target located at (5, 5, 0)?"
 
     # print(control_bot_llm(prompt))
+
+    # food_list = ["芒果", "雞蛋", "綠豆", "蘋果", "蘿蔔", "茄子", "南瓜", "西瓜", "豆腐", "乾麵"]
+    food_list = ["Mango", "Egg", "Mung Bean", "Apple", "Radish", "Eggplant", "Pumpkin", "Watermelon", "Tofu", "Dry Noodles"]
+    food_list = ["Eggplant", "Pumpkin", "Watermelon", "Tofu", "Dry Noodles"]
+    food_list = ["White Radish", "Banana", "Chinese Tofu", "Chinese Fried Rice", "Strawberry"]
+
+    for food in food_list:
+        prompt = f"a cartoon style pixel art of {food}"
+        url = generate_image(prompt)
+        download_image(url, f"{img_path}{food}.png")
+        # break
