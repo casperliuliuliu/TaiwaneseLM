@@ -21,7 +21,8 @@ while True:
     messages = [
         {
             "role": "system",
-            "content": "你是一個人工智慧助理",
+            # "content": "你是一個人工智慧助理",
+            "content": "你是一個介紹台灣文化與語言的小學老師，你知道台灣的地方特色，你在教學過程中會注意避免艱深晦澀的詞語。",
         },
         # {"role": "user", "content": "東北季風如何影響台灣氣候？"},
         {"role": "user", "content": content},
