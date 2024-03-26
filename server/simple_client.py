@@ -4,6 +4,36 @@ from scipy.io.wavfile import write
 import numpy as np
 import vlc
 import time
+
+def v1_eval(base_url, audio_file_path, message):
+    url = base_url + "/v1_eval"
+
+    files = {'audio': open(audio_file_path, 'rb')}
+    data = {'message': message}
+
+    # Send the POST request
+    response = requests.post(url, files=files, data=data)
+
+    # Check the server's response
+    if response.status_code == 200:
+        print("Success:", response.json())
+    else:
+        print("Error:", response.text)
+
+def v1_preparation(base_url):
+    url = base_url + "/v1_preparation"
+    try:
+        response = requests.get(url)
+        if response.status_code == 200:
+            data = response.json()
+            print("Response received:", data)
+            v1_answer = data.get('response', [])
+            print("Selected word(s):", v1_answer)
+        else:
+            print(f"Failed to get data. Status code: {response.status_code}")
+    except requests.exceptions.RequestException as e:
+        print(f"Request failed: {e}")
+
 def upload_image(base_url, image_path):
     url = base_url + "/upload_image"
     with open(image_path, 'rb') as image_file:
@@ -103,8 +133,11 @@ if __name__ == "__main__":
     # record_audio(duration=3, fs=44100, filename='output.mp3')
 
     # audio_file_path = "/Users/liushiwen/Desktop/大四下/NSC/server/output.mp3"  # Update this path to your audio file
+    audio_file_path = "/Users/liushiwen/Desktop/大四下/NSC/TaiwaneseLM/server/client_audio/gogooutput.mp3"
     # # send_message_and_audio(base_url, audio_file_path)
     # play_stream(base_url)
 
     # get_and_save_word_audio(base_url, '眼藥水')
-    upload_image(base_url, "/Users/liushiwen/Desktop/大四下/NSC/TaiwaneseLM/server/client_image/my_bro.png")
+    # upload_image(base_url, "/Users/liushiwen/Desktop/大四下/NSC/TaiwaneseLM/server/client_image/my_bro.png")
+    # v1_preparation(base_url)
+    v1_eval(base_url, audio_file_path, "v1")

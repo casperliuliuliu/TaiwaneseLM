@@ -2,8 +2,12 @@ from flask import Flask, request, jsonify, send_file, Response, stream_with_cont
 import os
 import random
 from shutil import copyfile
-from yating.yating_tts import speak_word_with_yating
+from tts import speak_word_with_yating
 import sys
+import werkzeug
+from datetime import datetime
+from eval_audio import eval_whisper
+from pydub import AudioSegment
 desired_path = "/Users/liushiwen/Desktop/大四下/"
 sys.path.append(desired_path)
 from yating_tts_sdk import YatingClient as ttsClient
@@ -11,36 +15,89 @@ from yating_tts_sdk import YatingClient as ttsClient
 from get_server_config import get_config
 config = get_config()
 app = Flask(__name__)
-server_path = "D:\\Casper\\Language\\TaiwaneseLM\\server"
-v1_answer = ""
+# server_path = "D:\\Casper\\Language\\TaiwaneseLM\\server"
+server_path = "/Users/liushiwen/Desktop/大四下/NSC/TaiwaneseLM/server/"
+v1_answer_file_path = "/Users/liushiwen/Desktop/大四下/NSC/TaiwaneseLM/server/server_audio/v1_audio_l.mp3"
+upload_audio_folder_path = f"{server_path}/server_audio/recordings/"
+
+@app.route('/v1_eval', methods=['POST'])
+def v1_eval():
+    global v1_answer_file_path
+    if 'audio' not in request.files:
+        return jsonify({"error": "No audio file part in the request"}), 400
+    
+    audio = request.files['audio']
+    message = request.form.get('message', '')
+
+    if audio.filename == '':
+        return jsonify({"error": "No selected file"}), 400
+
+    if audio and message:
+        # You can save the file to the server
+        file_extension = werkzeug.utils.secure_filename(audio.filename).rsplit('.', 1)[1]
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        audio_filename = f"{timestamp}.{file_extension}"
+        
+        user_audio_path = os.path.join(upload_audio_folder_path, audio_filename)
+        
+        audio.save(user_audio_path)
+        if file_extension == "m4a":
+            audio = AudioSegment.from_file(user_audio_path, format="m4a")
+            mp3_file_path = user_audio_path[:-3] + "mp3"
+            # Export the audio to MP3
+            audio.export(mp3_file_path, format="mp3")
+            user_audio_path = mp3_file_path
+        
+        print(f"Received message: {message}")
+        print(f"Audio saved to: {user_audio_path}")
+        eval_score = eval_whisper(user_audio_path, v1_answer_file_path)
+        print(f"eval_score: {eval_score}")
+        return jsonify({"response": eval_score})
+        # return jsonify({"response": "got it"})
+    else:
+        return jsonify({"error": "Missing audio or message"}), 400
+
+
 @app.route('/v1_download', methods=['GET'])
 def v1_download():
+    print("Running v1_download")
     text_input = request.args.get('text', None)
     if text_input is None:
         return "Missing text parameter", 400
     if text_input[-1] == "g":
-        file_path = f'{server_path}\\server_image\\{text_input}'
+        print(f"Sending image {text_input}")
+        file_path = f'{server_path}server_image/{text_input}'
     else:
-        file_path = f'{server_path}\\server_audio\\{text_input}'
+        print(f"Sending audio {text_input}")
+        file_path = f'{server_path}server_audio/{text_input}'
     return send_file(file_path, as_attachment=True)
 
 @app.route('/v1_preparation', methods=['GET'])
 def v1_preparation():
-    global v1_answer
+    print("Running v1_preparation")
+    global v1_answer_file_path
     audio_names = ["v1_audio_r", "v1_audio_m", "v1_audio_l"]
     img_names = ["v1_img_r", "v1_img_m", "v1_img_l"]
     word_lists = ["西瓜", "蘋果", "香蕉", "豆腐", "乾麵", "雞蛋", "茄子", "芒果", "南瓜", "草莓", "蘿蔔"]
     img_file = ["Watermelon", "Apple", "Banana", "Tofu", "Dry Noodles", "Egg", "Eggplant", "Mango", "Pumpkin", "Strawberry", "White Radish"]
-    selected_words = random.sample(word_lists, 3)
+    random_numbers = random.sample(range(0, len(word_lists)), 3)
+    print("random choice:", random_numbers)
+    selected_words = []
     for ii in range(3):
-        store_path = f"{server_path}\\server_audio\\{audio_names[ii]}"
-        speak_word_with_yating(selected_words[ii], store_path, ttsClient.MODEL_TAI_FEMALE_1)
+        store_path = f"{server_path}server_audio/{audio_names[ii]}"
+        print(f"Storing Audio{ii} to {store_path}")
+        selected_words.append(word_lists[random_numbers[ii]])
+        speak_word_with_yating(word_lists[random_numbers[ii]], store_path, ttsClient.MODEL_TAI_FEMALE_1)
         
-        source_path = f"{server_path}\\server_image\\{img_file[ii]}.png"
-        destination_path = f"{server_path}\\server_image\\{img_names[ii]}.png"
+        source_path = f"{server_path}/server_image/v1_{img_file[random_numbers[ii]]}.png"
+        destination_path = f"{server_path}/server_image/{img_names[ii]}.png"
+        print(f"Storing Image{ii} to {destination_path}")
         copyfile(source_path, destination_path)
 
-    v1_answer = random.sample(selected_words, 1)
+    ans_index = random.sample(range(0, len(selected_words)), 1)
+    v1_answer = selected_words[ans_index]
+    v1_answer_file_path = f"{server_path}server_audio/{audio_names[ans_index]}"
+    print(f"v1 answer:{v1_answer}")
     return jsonify({"response": v1_answer})
 
 @app.route('/upload_image', methods=['POST'])
