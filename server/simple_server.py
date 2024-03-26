@@ -1,15 +1,47 @@
-from flask import Flask, request, jsonify, send_file, Response, stream_with_context
+from flask import Flask, request, jsonify, send_file, Response, stream_with_context, abort
 import os
+import random
+from shutil import copyfile
 from yating.yating_tts import speak_word_with_yating
 import sys
 desired_path = "/Users/liushiwen/Desktop/大四下/"
 sys.path.append(desired_path)
+from yating_tts_sdk import YatingClient as ttsClient
 
 from get_server_config import get_config
 config = get_config()
 app = Flask(__name__)
+server_path = "D:\\Casper\\Language\\TaiwaneseLM\\server"
+v1_answer = ""
+@app.route('/v1_download', methods=['GET'])
+def v1_download():
+    text_input = request.args.get('text', None)
+    if text_input is None:
+        return "Missing text parameter", 400
+    if text_input[-1] == "g":
+        file_path = f'{server_path}\\server_image\\{text_input}'
+    else:
+        file_path = f'{server_path}\\server_audio\\{text_input}'
+    return send_file(file_path, as_attachment=True)
 
-# app.config = config
+@app.route('/v1_preparation', methods=['GET'])
+def v1_preparation():
+    global v1_answer
+    audio_names = ["v1_audio_r", "v1_audio_m", "v1_audio_l"]
+    img_names = ["v1_img_r", "v1_img_m", "v1_img_l"]
+    word_lists = ["西瓜", "蘋果", "香蕉", "豆腐", "乾麵", "雞蛋", "茄子", "芒果", "南瓜", "草莓", "蘿蔔"]
+    img_file = ["Watermelon", "Apple", "Banana", "Tofu", "Dry Noodles", "Egg", "Eggplant", "Mango", "Pumpkin", "Strawberry", "White Radish"]
+    selected_words = random.sample(word_lists, 3)
+    for ii in range(3):
+        store_path = f"{server_path}\\server_audio\\{audio_names[ii]}"
+        speak_word_with_yating(selected_words[ii], store_path, ttsClient.MODEL_TAI_FEMALE_1)
+        
+        source_path = f"{server_path}\\server_image\\{img_file[ii]}.png"
+        destination_path = f"{server_path}\\server_image\\{img_names[ii]}.png"
+        copyfile(source_path, destination_path)
+
+    v1_answer = random.sample(selected_words, 1)
+    return jsonify({"response": v1_answer})
 
 @app.route('/upload_image', methods=['POST'])
 def upload_image():

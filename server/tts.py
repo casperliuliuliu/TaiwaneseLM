@@ -24,7 +24,7 @@ def speak_word_with_yating(word, store_path = '', model_name=ttsClient.MODEL_TAI
     ENERGY = 1.5
     ENCODING = ttsClient.ENCODING_MP3
     SAMPLE_RATE = ttsClient.SAMPLE_RATE_16K
-    FILE_NAME = store_path + '/' + word
+    FILE_NAME = store_path
     try:
         client = ttsClient(URL, KEY)
         client.synthesize(TEXT, TEXT_TYPE, MODEL, SPEED, PITCH, ENERGY, ENCODING, SAMPLE_RATE, FILE_NAME)
@@ -34,5 +34,5 @@ def speak_word_with_yating(word, store_path = '', model_name=ttsClient.MODEL_TAI
 
 if __name__ == "__main__":
     store_path = "/Users/liushiwen/Desktop/大四下/NSC/TaiwaneseLM/server/yating/"
-    speak_word_with_yating("酷大便，三", store_path, ttsClient.MODEL_TAI_FEMALE_1)
-    speak_word_with_yating("酷大便，四", store_path, ttsClient.MODEL_ZHEN_FEMALE_1)
+    speak_word_with_yating("酷大便，三", store_path+"酷大便，三", ttsClient.MODEL_TAI_FEMALE_1)
+    speak_word_with_yating("酷大便，四", store_path+"酷大便，四", ttsClient.MODEL_ZHEN_FEMALE_1)
