@@ -10,7 +10,7 @@ draw = ImageDraw.Draw(image)
 # Circle parameters
 circle_center = (75, 75)
 circle_radius = 50
-circle_outline = "blue"
+circle_outline = "yellow"
 circle_width = 10
 
 # Draw a hollow circle

@@ -18,7 +18,61 @@ app = Flask(__name__)
 # server_path = "D:\\Casper\\Language\\TaiwaneseLM\\server"
 server_path = "/Users/liushiwen/Desktop/大四下/NSC/TaiwaneseLM/server/"
 v1_answer_file_path = "/Users/liushiwen/Desktop/大四下/NSC/TaiwaneseLM/server/server_audio/v1_audio_l.mp3"
+v2_answer_file_path = ""
+v3_answer_file_path = ""
 upload_audio_folder_path = f"{server_path}/server_audio/recordings/"
+
+@app.route('/v3_preparation', methods=['GET'])
+def v3_preparation():
+    print("Running v3_preparation")
+    global v3_answer_file_path
+    audio_names = ["v3_audio"]
+    sentence_lists = [
+        "四十四隻石獅子", 
+        "我愛寫程式", 
+        "千腦智能理論"
+    ]
+    random_numbers = random.sample(range(0, len(sentence_lists)), 1)
+    print("random choice:", random_numbers)
+    selected_words = []
+    for ii in range(1):
+        store_path = f"{server_path}server_audio/{audio_names[ii]}"
+        print(f"Storing Audio{ii} to {store_path}")
+        selected_words.append(sentence_lists[random_numbers[ii]])
+        speak_word_with_yating(sentence_lists[random_numbers[ii]], store_path, ttsClient.MODEL_TAI_FEMALE_1)
+        
+    ans_index = 0
+    v3_sentence = selected_words[ans_index]
+    v3_answer_file_path = f"{server_path}server_audio/{audio_names[ans_index]}.mp3"
+    print(f"update v3 ans file to {v3_answer_file_path}")
+    print(f"v3 sentence: {v3_sentence}")
+    return jsonify({"response": v3_sentence})
+
+@app.route('/v2_preparation', methods=['GET'])
+def v2_preparation():
+    print("Running v2_preparation")
+    global v2_answer_file_path
+    audio_names = ["v2_audio"]
+    sentence_lists = [
+        "吃西瓜不吐西瓜籽，不吃西瓜倒吐西瓜籽", 
+        "一天一蘋果，醫生遠離我。", 
+        "阿扁，錯了嗎？"
+    ]
+    random_numbers = random.sample(range(0, len(sentence_lists)), 1)
+    print("random choice:", random_numbers)
+    selected_words = []
+    for ii in range(1):
+        store_path = f"{server_path}server_audio/{audio_names[ii]}"
+        print(f"Storing Audio{ii} to {store_path}")
+        selected_words.append(sentence_lists[random_numbers[ii]])
+        speak_word_with_yating(sentence_lists[random_numbers[ii]], store_path, ttsClient.MODEL_TAI_FEMALE_1)
+        
+    ans_index = 0
+    v2_sentence = selected_words[ans_index]
+    v2_answer_file_path = f"{server_path}server_audio/{audio_names[ans_index]}.mp3"
+    print(f"update v2 ans file to {v2_answer_file_path}")
+    print(f"v2 sentence: {v2_sentence}")
+    return jsonify({"response": v2_sentence})
 
 @app.route('/v1_eval', methods=['POST'])
 def v1_eval():
@@ -49,10 +103,17 @@ def v1_eval():
             user_audio_path = mp3_file_path
         
         print(f"Received message: {message}")
-        print(f"Audio saved to: {user_audio_path}")
-        eval_score = eval_whisper(user_audio_path, v1_answer_file_path)
+        print(f"Audio saved to:\n{user_audio_path}")
+        if message == "v1":
+            ans_path = v1_answer_file_path
+        elif message == "v2":
+            ans_path = v2_answer_file_path
+        elif message == "v3":
+            ans_path = v3_answer_file_path
+        print(f"Ans file:\n{ans_path}")
+        eval_score = eval_whisper(user_audio_path, ans_path)
         print(f"eval_score: {eval_score}")
-        return jsonify({"response": eval_score})
+        return jsonify({"response": f"{eval_score}"})
         # return jsonify({"response": "got it"})
     else:
         return jsonify({"error": "Missing audio or message"}), 400
@@ -71,6 +132,7 @@ def v1_download():
         print(f"Sending audio {text_input}")
         file_path = f'{server_path}server_audio/{text_input}'
     return send_file(file_path, as_attachment=True)
+
 
 @app.route('/v1_preparation', methods=['GET'])
 def v1_preparation():
@@ -95,8 +157,8 @@ def v1_preparation():
         copyfile(source_path, destination_path)
 
     ans_index = random.sample(range(0, len(selected_words)), 1)
-    v1_answer = selected_words[ans_index]
-    v1_answer_file_path = f"{server_path}server_audio/{audio_names[ans_index]}"
+    v1_answer = selected_words[ans_index[0]]
+    v1_answer_file_path = f"{server_path}server_audio/{audio_names[ans_index[0]]}.mp3"
     print(f"v1 answer:{v1_answer}")
     return jsonify({"response": v1_answer})
 
