@@ -34,5 +34,5 @@ def speak_word_with_yating(word, store_path = '', model_name=ttsClient.MODEL_TAI
 
 if __name__ == "__main__":
     store_path = "/Users/liushiwen/Desktop/大四下/NSC/TaiwaneseLM/server/yating/"
-    speak_word_with_yating("酷大便，三", store_path+"酷大便20", ttsClient.MODEL_TAI_FEMALE_1)
+    speak_word_with_yating("水是一種液態物質，由兩個氫原子和一個氧原子組成，其化學式為H2O。水是地球上最常見的化合物之一，對於支持生命和維持生態系統至關重要。", store_path+"20", ttsClient.MODEL_TAI_FEMALE_1)
     speak_word_with_yating("酷大便，四", store_path+"酷大便，四", ttsClient.MODEL_ZHEN_FEMALE_1)

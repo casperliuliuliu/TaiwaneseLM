@@ -4,10 +4,12 @@ import random
 from shutil import copyfile
 from tts import speak_word_with_yating
 import sys
+import time
 import werkzeug
 from datetime import datetime
-from eval_audio import eval_whisper
+from eval_audio import eval_whisper, asr_from_yating
 from pydub import AudioSegment
+import server_function
 desired_path = "/Users/liushiwen/Desktop/大四下/"
 sys.path.append(desired_path)
 from yating_tts_sdk import YatingClient as ttsClient
@@ -110,17 +112,28 @@ def v1_eval():
             ans_path = v2_answer_file_path
         elif message == "v3":
             ans_path = v3_answer_file_path
-        print(f"Ans file:\n{ans_path}")
-        eval_score = eval_whisper(user_audio_path, ans_path)
-        print(f"eval_score: {eval_score}")
-        return jsonify({"response": f"{eval_score}"})
-        # return jsonify({"response": "got it"})
+        if message == "main":
+            print("talking to BaWan")
+            asr_result = asr_from_yating(user_audio_path)
+            store_path = f"{server_path}server_audio/main_audio"
+            prompt = server_function.prompting(asr_result, "chat")
+            prompt = "什麼是水"
+            llm_response = server_function.brain_llm(prompt)
+            print(f"BaWan:{llm_response}")
+            speak_word_with_yating(llm_response, store_path, ttsClient.MODEL_TAI_FEMALE_1)
+            return jsonify({"response": f"{llm_response}"})
+        else:
+            print(f"Ans file:\n{ans_path}")
+            eval_score = eval_whisper(user_audio_path, ans_path)
+            print(f"eval_score: {eval_score}")
+            return jsonify({"response": f"{eval_score}"})
     else:
         return jsonify({"error": "Missing audio or message"}), 400
 
 
 @app.route('/v1_download', methods=['GET'])
 def v1_download():
+    time.sleep(3)
     print("Running v1_download")
     text_input = request.args.get('text', None)
     if text_input is None:
@@ -207,6 +220,7 @@ def stream_audio_route():
 def download_audio():
     # Specify the path to your audio file
     audio_file_path = '/Users/liushiwen/Desktop/大四下/NSC/TaiwaneseLM/server/server_audio/output.mp3'
+    audio_file_path = f"{server_path}server_audio/main_audio.mp3"
     return send_file(audio_file_path, as_attachment=True)
 
 @app.route('/upload_audio', methods=['POST']) # This function could be streaming

@@ -22,7 +22,8 @@ def vision_llm(image_path):
         {
         "role": "user",
         "content": [
-            {"type": "text", "text": "What's in this image?"},
+            # {"type": "text", "text": "What's in this image?"},
+            {"type": "text", "text": "這張照片中有什麼東西？"},
             {
             "type": "image_url",
             "image_url": {
@@ -36,10 +37,42 @@ def vision_llm(image_path):
     )
     return response.choices[0]
 
-def prompting(message, task):
-    prompt = ''
+def completion_llm(message, old_prompt):
+    
+    prompt = [
+        # {"role": "system", "content": "You are an elementary teacher. "},
+        # {"role": "system", "content": "你是一個小學老師，現在正在陪伴一位同學聊天，用口語以及繁體中文的方式做出回覆，因為同學的輸入是以語音辨識後的文字輸入，可能會有許多奇怪斷點及錯字，因此請盡力推測同學所表達的意思，並基於此作出回答。"},
+        {"role": "system", "content": "You are an elementary school teacher currently engaging in a chat with a student. Please respond using colloquial language and Traditional Chinese characters. Since the student's input is through voice recognition, there may be unusual breaks and misspellings in the text. Therefore, try your best to infer the intended meaning of the student's messages and respond accordingly."},
+        {"role": "user", "content": "Who won the world series in 2020?"},
+        {"role": "assistant", "content": "The Los Angeles Dodgers won the World Series in 2020."},
+        {"role": "user", "content": prompt}
+    ]
+
+    response = client.chat.completions.create(
+    model="gpt-3.5-turbo-0125", # cheaper
+    messages=prompt
+    )
+    memory_summary(prompt[-1]['content'])
+    message = response.choices[0].message.content
+    return message
+
+def prompting(message, old_prompt):
+    
+    prompt = [
+        # {"role": "system", "content": "You are an elementary teacher. "},
+        # {"role": "system", "content": "你是一個小學老師，現在正在陪伴一位同學聊天，用口語以及繁體中文的方式做出回覆，因為同學的輸入是以語音辨識後的文字輸入，可能會有許多奇怪斷點及錯字，因此請盡力推測同學所表達的意思，並基於此作出回答。"},
+        {"role": "system", "content": "You are an elementary school teacher currently engaging in a chat with a student. Please respond using colloquial language and Traditional Chinese characters. Since the student's input is through voice recognition, there may be unusual breaks and misspellings in the text. Therefore, try your best to infer the intended meaning of the student's messages and respond accordingly."}
+    ]
+    memory_prompt = fetch_memory()
+    prompt.append(memory_prompt)
+
+    prompt += old_prompt
+    message_prompt = {"role": "user", "content": message}
+    prompt.append(message_prompt)
+
     # fetch_memory
     return prompt
+
 
 def control_bot_llm(env_prompt): # return json file to control functions
     action_json = ''
@@ -53,6 +86,9 @@ def control_bot_llm(env_prompt): # return json file to control functions
     )
     print(response.choices[0].message.content)
     return action_json
+
+def fetch_memory():
+    return "hehe"
 
 def memory_summary(prompt): # access txt 
     # re
@@ -68,15 +104,10 @@ def brain_llm(prompt, vision_flag=False, img_path=''):
     response = client.chat.completions.create(
     # model="gpt-3.5-turbo",
     model="gpt-3.5-turbo-0125", # cheaper
-    messages=[
-        {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user", "content": "Who won the world series in 2020?"},
-        {"role": "assistant", "content": "The Los Angeles Dodgers won the World Series in 2020."},
-        {"role": "user", "content": "Where was it played?"}
-    ]
+    messages=prompt
     )
-    print(response.choices[0].message.content)
-    return text_message
+    memory_summary(prompt[-1]['content'])
+    return response.choices[0].message.content
 
 def translating(english_message): # might not use this.
     chinese_message = ''

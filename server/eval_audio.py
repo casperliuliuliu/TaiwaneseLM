@@ -28,18 +28,21 @@ def asr_from_whisper(audio_path, lang_code):
     print(transcription.text)
     return transcription.text
 
-# def asr_from_yating(audio_path):
-#     global yating_result
-#     yating_result = ''
-#     asr_client = StreamingClient(yating_key)
+def asr_from_yating(audio_path):
+    global yating_result
+    if audio_path[-3:] == "mp3":
+         mp32wav(audio_path, audio_path[:-3]+"wav")
+    audio_path = audio_path[:-3]+"wav"
+    yating_result = ''
+    asr_client = StreamingClient(yating_key)
 
-#     asr_client.start_streaming_wav(
-#     pipeline='asr-zh-tw-std',
-#     file=audio_path,
-#     verbose=False, 
-#     on_processing_sentence=on_processing_sentence,
-#     on_final_sentence=on_final_sentence)
-#     return yating_result
+    asr_client.start_streaming_wav(
+    pipeline='asr-zh-tw-std',
+    file=audio_path,
+    verbose=False, 
+    on_processing_sentence=on_processing_sentence,
+    on_final_sentence=on_final_sentence)
+    return yating_result
 
 def on_processing_sentence(message):
     global yating_result
@@ -82,4 +85,5 @@ if __name__ == "__main__":
     # print("real resul:", asr_from_whisper(wav_path, 'vi'))
     user_audio_path = '/Users/liushiwen/Desktop/大四下/NSC/TaiwaneseLM/server/server_audio/蔡英文.mp3'
     system_audio_path = '/Users/liushiwen/Desktop/大四下/NSC/TaiwaneseLM/server/yating/example.mp3'
-    print(eval_whisper(user_audio_path, system_audio_path))
+    # print(eval_whisper(user_audio_path, system_audio_path))
+    print("result:",asr_from_yating("/Users/liushiwen/Desktop/大四下/NSC/TaiwaneseLM/server/server_audio/v3_audio.mp3"))
