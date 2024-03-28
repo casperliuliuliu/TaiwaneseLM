@@ -116,8 +116,8 @@ def v1_eval():
             print("talking to BaWan")
             asr_result = asr_from_yating(user_audio_path)
             store_path = f"{server_path}server_audio/main_audio"
+            asr_result = "什麼是水"
             prompt = server_function.prompting(asr_result, "chat")
-            prompt = "什麼是水"
             llm_response = server_function.brain_llm(prompt)
             print(f"BaWan:{llm_response}")
             speak_word_with_yating(llm_response, store_path, ttsClient.MODEL_TAI_FEMALE_1)

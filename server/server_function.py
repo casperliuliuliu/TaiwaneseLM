@@ -91,7 +91,8 @@ def fetch_memory():
     return "hehe"
 
 def memory_summary(prompt): # access txt 
-    # re
+    with open("llm_memory.txt", 'a', encoding='utf-8') as file:
+        file.write(prompt + '\n')
     return 1
 
 def brain_llm(prompt, vision_flag=False, img_path=''):
@@ -135,7 +136,6 @@ def download_image(image_url, image_name):
         print(f"Failed to download image. Status code: {response.status_code}")
 
 def evaluation(audio_path):
-
     score = 100
     return score
 
@@ -187,12 +187,13 @@ if __name__ == "__main__":
     # print(control_bot_llm(prompt))
 
     # food_list = ["芒果", "雞蛋", "綠豆", "蘋果", "蘿蔔", "茄子", "南瓜", "西瓜", "豆腐", "乾麵"]
-    food_list = ["Mango", "Egg", "Mung Bean", "Apple", "Radish", "Eggplant", "Pumpkin", "Watermelon", "Tofu", "Dry Noodles"]
-    food_list = ["Eggplant", "Pumpkin", "Watermelon", "Tofu", "Dry Noodles"]
-    food_list = ["White Radish", "Banana", "Chinese Tofu", "Chinese Fried Rice", "Strawberry"]
+    # food_list = ["Mango", "Egg", "Mung Bean", "Apple", "Radish", "Eggplant", "Pumpkin", "Watermelon", "Tofu", "Dry Noodles"]
+    # food_list = ["Eggplant", "Pumpkin", "Watermelon", "Tofu", "Dry Noodles"]
+    # food_list = ["White Radish", "Banana", "Chinese Tofu", "Chinese Fried Rice", "Strawberry"]
 
-    for food in food_list:
-        prompt = f"a cartoon style pixel art of {food}"
-        url = generate_image(prompt)
-        download_image(url, f"{img_path}{food}.png")
+    # for food in food_list:
+    #     prompt = f"a cartoon style pixel art of {food}"
+    #     url = generate_image(prompt)
+    #     download_image(url, f"{img_path}{food}.png")
         # break
+    
