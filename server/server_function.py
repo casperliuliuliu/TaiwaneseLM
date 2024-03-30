@@ -2,6 +2,8 @@ import sys
 import base64
 import requests
 from openai import OpenAI
+import random
+import json
 desired_path = "/Users/liushiwen/Desktop/大四下/"
 sys.path.append(desired_path)
 from get_server_config import get_config
@@ -74,18 +76,32 @@ def prompting(message, old_prompt):
     return prompt
 
 
-def control_bot_llm(env_prompt): # return json file to control functions
-    action_json = ''
+def control_bot_llm(env): # return json file to control functions
+    x = env['x']
+    y = env['y']
+    z = env['z']
+    sausage_x = env['sausage_x']
+    sausage_y = env['sausage_y']
+    sausage_z = env['sausage_z']
+    prompt_template = f"""
+    Given an agent's current position at coordinates (agent_x, agent_y, agent_z) = ({x}, {y}, {z}) and a target position at (target_x, target_y, target_z) = ({sausage_x}, {sausage_y}, {sausage_z}), calculate the x, y, z values of the vector along which the agent should move to approach the target. Provide the values moveX, moveY, moveZ.
+    """
     response = client.chat.completions.create(
     model="gpt-3.5-turbo-0125",
     response_format={ "type": "json_object" },
     messages=[
-        {"role": "system", "content": "You are a helpful assistant designed to control a robot by outputing JSON."},
-        {"role": "user", "content": env_prompt}
+        {"role": "system", "content": "You are a helpful assistant designed to control a robot by outputing JSON, which need 3 parameter moveX, moveY, moveZ, each parameter should not exceed 0.05. You goal is to get the target, if target is None, you can simple move around randomly."},
+        {"role": "user", "content": prompt_template}
     ]
     )
-    print(response.choices[0].message.content)
-    return action_json
+    action_json = response.choices[0].message.content
+    action_json = json.loads(action_json)
+    action_json['rotateX'] = random.uniform(-1, 1)
+    action_json['rotateY'] = random.uniform(-1, 1)
+    action_json['rotateZ'] = random.uniform(-1, 1)
+    action_json['duration'] = 2
+
+    return str(action_json)
 
 def fetch_memory():
     return "hehe"
@@ -196,4 +212,15 @@ if __name__ == "__main__":
     #     url = generate_image(prompt)
     #     download_image(url, f"{img_path}{food}.png")
         # break
-    
+    env = {
+        'x': 10.23423,
+        'y': -10.4520,
+        'z': 5.4534592,
+        # 'sausage_x': 4.13094203,
+        # 'sausage_y': -2.534950345,
+        # 'sausage_z': 5.453534,
+        'sausage_x': None,
+        'sausage_y': None,
+        'sausage_z': None,
+    }
+    print(control_bot_llm(env))

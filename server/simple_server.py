@@ -24,6 +24,41 @@ v2_answer_file_path = ""
 v3_answer_file_path = ""
 upload_audio_folder_path = f"{server_path}/server_audio/recordings/"
 
+@app.route('/move_bawan', methods=['POST'])
+def move_bawan():
+    print("moving BaWan")
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "Missing data"}), 400
+
+    x = data.get('x')
+    y = data.get('y')
+    z = data.get('z')
+    sausage_x = data.get('sausage_x')
+    sausage_y = data.get('sausage_y')
+    sausage_z = data.get('sausage_z')
+    env  = {
+        'x': x,
+        'y': y,
+        'z': z,
+        'sausage_x': sausage_x,
+        'sausage_y': sausage_y,
+        'sausage_z': sausage_z,
+    }
+    print("BaWan x, y, z:",x, y, z)
+    print("sausage x, y, z:",sausage_x, sausage_y, sausage_z)
+    # instructions = {
+    #     "moveX": 0.01,
+    #     "moveY": 0.02,
+    #     "moveZ": 0.03,
+    #     "rotateX": 0.0,
+    #     "rotateY": 1.0,
+    #     "rotateZ": 0.0,
+    #     "duration": 2  # Angle in degrees
+    # }
+    instructions = server_function.control_bot_llm(env)
+    return jsonify(instructions)
+
 @app.route('/v3_preparation', methods=['GET'])
 def v3_preparation():
     print("Running v3_preparation")
@@ -260,7 +295,7 @@ def send_message():
     return jsonify(response_message)
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=645)
+    app.run(debug=True, host='0.0.0.0', port=45216)
 
 
 
