@@ -40,15 +40,14 @@ def vision_llm(image_path):
     return response.choices[0]
 
 def completion_llm(message, old_prompt):
-    
     prompt = [
         # {"role": "system", "content": "You are an elementary teacher. "},
         # {"role": "system", "content": "你是一個小學老師，現在正在陪伴一位同學聊天，用口語以及繁體中文的方式做出回覆，因為同學的輸入是以語音辨識後的文字輸入，可能會有許多奇怪斷點及錯字，因此請盡力推測同學所表達的意思，並基於此作出回答。"},
         {"role": "system", "content": "You are an elementary school teacher currently engaging in a chat with a student. Please respond using colloquial language and Traditional Chinese characters. Since the student's input is through voice recognition, there may be unusual breaks and misspellings in the text. Therefore, try your best to infer the intended meaning of the student's messages and respond accordingly."},
-        {"role": "user", "content": "Who won the world series in 2020?"},
-        {"role": "assistant", "content": "The Los Angeles Dodgers won the World Series in 2020."},
-        {"role": "user", "content": prompt}
     ]
+    prompt.append(old_prompt)
+    prompt.append({"role": "user", "content": message})
+        
 
     response = client.chat.completions.create(
     model="gpt-3.5-turbo-0125", # cheaper
@@ -90,7 +89,7 @@ def control_bot_llm(env): # return json file to control functions
     model="gpt-3.5-turbo-0125",
     response_format={ "type": "json_object" },
     messages=[
-        {"role": "system", "content": "You are a helpful assistant designed to control a robot by outputing JSON, which need 3 parameter moveX, moveY, moveZ, each parameter should not exceed 0.05. You goal is to get the target, if target is None, you can simple move around randomly."},
+        {"role": "system", "content": "You are a helpful assistant designed to control a robot by outputing JSON, which need 3 parameter moveX, moveY, moveZ, each parameter should not exceed 0.05. You goal is to get the target, if target is None, you can simple move around, but try to make y positive."},
         {"role": "user", "content": prompt_template}
     ]
     )
@@ -101,7 +100,7 @@ def control_bot_llm(env): # return json file to control functions
     action_json['rotateZ'] = random.uniform(-1, 1)
     action_json['duration'] = 2
 
-    return str(action_json)
+    return action_json
 
 def fetch_memory():
     return "hehe"
