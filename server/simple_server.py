@@ -94,9 +94,14 @@ def v2_preparation():
     global v2_answer_file_path
     audio_names = ["v2_audio"]
     sentence_lists = [
-        "吃西瓜不吐西瓜籽，不吃西瓜倒吐西瓜籽", 
-        "一天一蘋果，醫生遠離我。", 
-        "阿扁，錯了嗎？"
+        # "吃西瓜不吐西瓜籽，不吃西瓜倒吐西瓜籽", 
+        # "一天一蘋果，醫生遠離我。", 
+        "無風起大浪",
+        "一寸光陰一寸金，寸金難買寸光陰。",
+        "時到時擔當，沒米煮蕃薯湯",
+        "賣茶講茶香，賣花說花紅",
+        "歹竹，出好筍",
+        "一樣米，飼百樣人",
     ]
     random_numbers = random.sample(range(0, len(sentence_lists)), 1)
     print("random choice:", random_numbers)
