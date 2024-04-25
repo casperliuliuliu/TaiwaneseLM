@@ -3,8 +3,9 @@ import base64
 import requests
 from openai import OpenAI
 desired_path = "/Users/liushiwen/Desktop/大四下/"
+desired_path = "D:\\Casper\\OTHER\\"
 sys.path.append(desired_path)
-from get_server_config import get_config
+from my_config import get_config
 config = get_config()
 my_api_key = config["OPENAI_API_KEY"]
 client = OpenAI(api_key=my_api_key)
@@ -22,8 +23,8 @@ def vision_llm(image_path):
         {
         "role": "user",
         "content": [
-            # {"type": "text", "text": "What's in this image?"},
-            {"type": "text", "text": "這張照片中有什麼東西？"},
+            {"type": "text", "text": "What's in this image?"},
+            # {"type": "text", "text": "這張照片中有什麼東西？"},
             {
             "type": "image_url",
             "image_url": {
@@ -174,8 +175,9 @@ def pretend_send_env():
 if __name__ == "__main__":
     img_path = "/Users/liushiwen/Desktop/大四下/NSC/TaiwaneseLM/server/server_image/img.png"
     img_path = "/Users/liushiwen/Desktop/大四下/NSC/TaiwaneseLM/server/server_image/"
-    # vision_message = vision_llm(img_path)
-    # print(vision_message)
+    img_path = "D:\\Casper\\aML\\HW5\\my_bro.png"
+    vision_message = vision_llm(img_path)
+    print(vision_message)
 
     # gen_img_prompt = "a cartoon fruit"
     # generate_image(gen_img_prompt)
