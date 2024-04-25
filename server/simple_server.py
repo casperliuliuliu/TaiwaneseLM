@@ -23,6 +23,41 @@ v1_answer_file_path = "/Users/liushiwen/Desktop/大四下/NSC/TaiwaneseLM/server
 v2_answer_file_path = ""
 v3_answer_file_path = ""
 upload_audio_folder_path = f"{server_path}/server_audio/recordings/"
+old_prompts = []
+@app.route('/move_bawan', methods=['POST'])
+def move_bawan():
+    print("moving BaWan")
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "Missing data"}), 400
+
+    x = data.get('x')
+    y = data.get('y')
+    z = data.get('z')
+    sausage_x = data.get('sausage_x')
+    sausage_y = data.get('sausage_y')
+    sausage_z = data.get('sausage_z')
+    env  = {
+        'x': x,
+        'y': y,
+        'z': z,
+        'sausage_x': sausage_x,
+        'sausage_y': sausage_y,
+        'sausage_z': sausage_z,
+    }
+    print("BaWan x, y, z:",x, y, z)
+    print("sausage x, y, z:",sausage_x, sausage_y, sausage_z)
+    # instructions = {
+    #     "moveX": 0.01,
+    #     "moveY": 0.02,
+    #     "moveZ": 0.03,
+    #     "rotateX": 0.0,
+    #     "rotateY": 1.0,
+    #     "rotateZ": 0.0,
+    #     "duration": 2  # Angle in degrees
+    # }
+    instructions = server_function.control_bot_llm(env)
+    return jsonify(instructions)
 
 @app.route('/v3_preparation', methods=['GET'])
 def v3_preparation():
@@ -30,9 +65,12 @@ def v3_preparation():
     global v3_answer_file_path
     audio_names = ["v3_audio"]
     sentence_lists = [
-        "四十四隻石獅子", 
+        "一起學台語", 
         "我愛寫程式", 
-        "千腦智能理論"
+        "吃飽沒",
+        "最近好嗎？",
+        "今天天氣怎麼樣",
+        "食飽未？來食飯哦！",
     ]
     random_numbers = random.sample(range(0, len(sentence_lists)), 1)
     print("random choice:", random_numbers)
@@ -56,9 +94,14 @@ def v2_preparation():
     global v2_answer_file_path
     audio_names = ["v2_audio"]
     sentence_lists = [
-        "吃西瓜不吐西瓜籽，不吃西瓜倒吐西瓜籽", 
-        "一天一蘋果，醫生遠離我。", 
-        "阿扁，錯了嗎？"
+        # "吃西瓜不吐西瓜籽，不吃西瓜倒吐西瓜籽", 
+        # "一天一蘋果，醫生遠離我。", 
+        "無風起大浪",
+        "一寸光陰一寸金，寸金難買寸光陰。",
+        "時到時擔當，沒米煮蕃薯湯",
+        "賣茶講茶香，賣花說花紅",
+        "歹竹，出好筍",
+        "一樣米，飼百樣人",
     ]
     random_numbers = random.sample(range(0, len(sentence_lists)), 1)
     print("random choice:", random_numbers)
@@ -116,11 +159,15 @@ def v1_eval():
             print("talking to BaWan")
             asr_result = asr_from_yating(user_audio_path)
             store_path = f"{server_path}server_audio/main_audio"
-            asr_result = "什麼是水"
-            prompt = server_function.prompting(asr_result, "chat")
-            llm_response = server_function.brain_llm(prompt)
+            # asr_result = "什麼是水"
+            print(f"Asr result:{asr_result}")
+            llm_response = server_function.brain_llm(asr_result, old_prompts)
             print(f"BaWan:{llm_response}")
             speak_word_with_yating(llm_response, store_path, ttsClient.MODEL_TAI_FEMALE_1)
+            old_prompts.append({"role": "user", "content": asr_result})
+            old_prompts.append({"role": "assistant", "content": llm_response})
+            while len(old_prompts) > 6:
+                old_prompts.pop(0)
             return jsonify({"response": f"{llm_response}"})
         else:
             print(f"Ans file:\n{ans_path}")
@@ -260,7 +307,7 @@ def send_message():
     return jsonify(response_message)
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=645)
+    app.run(debug=True, host='0.0.0.0', port=45216)
 
 
 
